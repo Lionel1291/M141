@@ -141,3 +141,66 @@ Migrationen kann man wie beim Backup Physisch oder Logisch durchfühen. Die Vor 
   * Pro: Struktur vorhanden, lesbar und veränderbar, lässit Migration auf andere Server-Versionen/Produkte zu
   * Con: gross und langsam
 ### Einfach
+```sql
+# Dump erstellen und direkt zippen
+mysqldump --single-transaction -u lionel -pPassword123$ sakila | gzip -9 > /tmp/DUMP_DB.sql.gz
+
+# Files auf einen anderen Server kopieren, meistens über SSH
+scp /tmp/DUMP_DB.sql.gz root@10.11.11.128:/tmp/
+
+# Auf dem Zielserver neue NEUEDB erstellen
+create database sakila2;
+
+# Direktes Entzippen und importieren
+gunzip < DUMP_DB.sql.gz | mysql -u lionel -pPassword123$ Sakila2
+```
+### Elegant
+Diese Methode kann bei häufigen Migrationen recht mühsam werden, da es lange dauert. Der Sitch -h wird hier mit mysqldump verwendet.
+1. Export der via mysqldump
+2. umleitung der Ausgabe auf einen anderen Client mysql-client eines anderen Servers
+
+```sql
+# Export von local to remote:
+mysqldump --single-transaction -u lionel -pPassword123$ sakila -h localhost \
+    | mysql -u lionel -pPassword123$ -h 10.11.11.128 sakila
+
+# Import von Remote to local:
+mysqldump --single-transaction -u lionel -pPassword123$ sakila -h 10.11.11.128 \ 
+    | mysql -u lionel -pPassword123$ -h localhost sakila
+```
+Sinnvolle Optionen bei mysqldump:
+* --databases DB erstellt automatisch auch ein CREATE dbname im export Skript
+* -add-drop-databases erstell automatisch auch ein DROP dbName
+* --add-drop-table fügt automatisch ein Drop TAble hinzu
+
+### Super Elegant
+Hier wird die Migration über eine SSH Verbindung durchgeführt, dadurch kann ich den alles mittels Pipe direkt umleiten. Vorgehen:
+1. SSH Verbindung auf Server1 machen und direkt in der Verbindung den DUMP BEfehel ausführen
+2. Ausgabe dann in ein Pipe umleiten
+3. Direkt aus der Pipe eine SSH Verbindung auf den Server2 umleiten, wo mit den Daten der Import ausgeführt wird
+
+Die DB muss schon vorhanden sein auf dem neuen Server.
+#### Keine Direkte Verbindung, Daten zwischenspeichern
+```shell
+ssh user@SERVER1 'mysqldump --single-transaction -u lionel -pPasswor123$ sakila' | 
+    ssh user@SERVER2 'mysql -u lionel -pPasswor123$ sakila2'
+```
+#### Verbindung zwischen den Servern mit SSH
+```shell
+mysqldump --single-transaction -u lionel -pPasswor123$ sakila | 
+    ssh user@SERVER2 'mysql -u lionel -pPasswor123$ sakila2'
+# Mit beidseitigem SSH
+ssh user@SERVER1 'mysqldump --single-transaction -u lionel -pPasswor123$ sakila' 
+    | ssh user@SERVER2 'mysql -u lionel -pPasswor123$ sakila2'
+```
+Bei schlechtem Netz sollte man FIFOs verwenden, das sind physische Dateien, die wie Pipes funktionieren:
+```shell
+# FIFO erstellen
+mkfifo namedPipe
+
+# Export in Fifo umleiten
+ssh user@SERVER1 'mysqldump --single-transaction -u lionel -pPasswor123$ sakila | gzip -9' > namedPipe;
+
+# Import aus Fifo machen und umleiten auf die Import-SSH-Verbindung
+ssh user@SERVER2 'gunzip | mysql -u lionel -pPasswor123$ sakila2' < namedPipe;
+```
