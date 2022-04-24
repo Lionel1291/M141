@@ -74,3 +74,57 @@ Erkentnisse:
 
 #### Fazit
 Indexing hat die durchsuchten Spalten auf 4 reduiziert von über 90Mio. was eine erhebliche verbesserung ist und dadutch auch die Zugriffszeit auf die DB schwindet.
+### Unions
+Zu viele ORs können auch zu einem Fulltable Scan führen, deshalb einzelne Queries und unions all.
+```sql
+#Schlecht:
+select * from users where firstname like  'Ha%'  or lastname like 'Ha%' ;
+
+# Gut:
+select * from users where firstname like 'Ha%' union all select * from users where lastname like  'Ha%';
+```
+### Wildcards
+Keine führenden Wildcards bei Selects!!!!!! 
+```sql
+select * from users where firstname like  '%Ha';
+```
+### Fulltext Search
+Fulltext Searches sind besser und Effizienter als Wildcards
+```sql
+Alter table users ADD FULLTEXT (firstname, lastname);
+Select * from users where match(firstname, lastname) AGAINST ('Ha');
+explain Select * from users where match(firstname, lastname) AGAINST ('Ha');
++----+-------------+----------+------------+----------+---------------+------------+---------+-------+------+----------+-------------------------------+
+| id | select_type | table    | partitions | type     | possible_keys | key        | key_len | ref   | rows | filtered | Extra                         |
++----+-------------+----------+------------+----------+---------------+------------+---------+-------+------+----------+-------------------------------+
+|  1 | SIMPLE      | users    | NULL       | fulltext | firstname     | firstname  | 0       | const |    1 |   100.00 | Using where; Ft_hints: sorted |
++----+-------------+----------+------------+----------+---------------+------------+---------+-------+------+----------+-------------------------------+
+```
+### Datenbank Design
+1. Tabellen Normalisieren / keine Redundanten Daten
+2. Geschickte Datentypen
+3. NULL-Werte
+4. Zu viele Spalten(Attribute) im Design vermeinden
+5. Bei SQL-Joins vorsichtig sein (nurt die Tabellen eingebziehen, die auch nötig sind) - nur Daten ausgeben die nötig sind (kein Select *)
+
+### Caching aktivieren
+Caching Werte anzeigen:
+```sql
+mysql> show variables like 'query_cache_%' ;
++------------------------------+----------+
+| Variable_name                | Value    |
++------------------------------+----------+
+| query_cache_limit            | 1048576  |
+| query_cache_min_res_unit     | 4096     |
+| query_cache_size             | 16777216 |
+| query_cache_type             | OFF      |
+| query_cache_wlock_invalidate | OFF      |
++------------------------------+----------+
+5 rows in set (0.00 sec)
+```
+Config nach bedürfnissen anpassen (Zu gross braucht zu viel Speicher)
+```editorconfig
+query_cache_type=1          # 1 ist eingestellt / 0 ist aus
+query_cache_size = 10M      # default ist 1MB / erhöhen auf 10MB macht Sinn
+query_cache_limit=1M        # Individuelle Query-Resultate die gecacht werden, 1MB macht Sinn
+```
