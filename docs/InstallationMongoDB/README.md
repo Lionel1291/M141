@@ -182,6 +182,9 @@ db.meinecollection.remove ( { Alter: 28 }, 1 ) // löscht nur einen
 Output:                                  
 ![Hier sollte ein Bild über die MongoDB einführung erscheinen](../images/mongoeinf3.png)                           
 ### Installieren Sie ein GUI-Client-Programm um auf MongoDB zuzugreifen und testen Sie die Software aus
+Ich habe mich für für Stuido 3T entschieden und finde es super programm, da es an mysql GIU Programme erinntert. Zudem kann man auch Migrationen durchführen, Select update Insert Delete vorgänge erledingen und auch Collections wie DBs erstellen. Es erfüllt alles was man für die Verwaltung einer Datenbank braucht. Die Installation besteht aus einer Shell was es ebenfalls recht einfach macht. Schade ist, dass die Vollversion nur 30 Tage gültig ist. WEitere Informationen findet man unter folgendem [Link](https://studio3t.com/)               
+Output:                                  
+![Hier sollte ein Bild über die MongoDB einführung erscheinen](../images/mongoeinf4.png)              
 ## Dienste
 ### Handling
 ```shell
