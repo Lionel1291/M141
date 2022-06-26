@@ -11,5 +11,5 @@
 * [Installation MongoDB](InstallationMongoDB/)
 * [Import/Export/Backup/Restore und Queries](ImportExportBackupRestoreQueriesMongoDB/)
 * [Benutzer und URI](BenutzerUndURI/)
-* [Design von MongoDB-Schemas, Indexierung, Cluster](DesignvonMongoDB-SchemasIndexierungCluster)
+* [Design von MongoDB-Schemas, Indexierung, Cluster](DesignvonMongoDB-SchemasIndexierungCluster/)
 * [MySQL Cluster](MySQLCluster/)

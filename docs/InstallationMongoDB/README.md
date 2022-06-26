@@ -89,6 +89,45 @@ sudo apt-get install -y mongodb-org
 Output:                            
 ![Hier sollte ein Bild über die den MongoDB installationsprozess erscheinen](../images/mongoinstall4.png)               
 ## Test der Installation
+Das Testen einer Installation ist essentziell, damit frühzeitig festgestellt wird, wenn eine Installation fehlerhaft ist.
+### Dienste
+Mit dem Nachfolgenden Befehl habe ich den Status des Dienstes abgefragt:         
+```bash
+sudo systemctl status mongod.service
+```
+Output:                            
+![Hier sollte ein Bild über die den MongoDB Test erscheinen](../images/Monogtest1.png)        
+### Verbindungstest
+Mit dem Nachfolgenden Befehl kann ich mich Verbinden:
+```bash
+mongo
+```
+Output:                            
+![Hier sollte ein Bild über die den MongoDB Test erscheinen](../images/Monogtest2.png)             
+### Installiere DBs
+Nachfolgender Befehl zeigt alle DBs auf dem Server an
+```mongo
+show dbs;
+```
+Output:                            
+![Hier sollte ein Bild über die den MongoDB Test erscheinen](../images/Monogtest3.png)                       
+### Installierte User
+Die installierten USer kann man über die admin DB anzeigen mit nachfolgenden Befehl
+```mongo
+use admin
+show users;
+```
+Output:                            
+![Hier sollte ein Bild über die den MongoDB Test erscheinen](../images/Monogtest5.png)                   
+### Version
+Mit nachgfolgendem Befehl kann ich mir die aktuell verwendete MongoDB Version anzeigne           
+```monog
+db.version()
+```
+Output:                            
+![Hier sollte ein Bild über die den MongoDB Test erscheinen](../images/Monogtest4.png)            
+### DB und Collection erstellen
+Diese Infos findet man hier [Erstellen Sie eine Datenbank Ihrer Wahl](http://localhost:10000/#/InstallationMongoDB/?id=erstellen-sie-eine-datenbank-ihrer-wahl)                         
 ## Dokumentation zur Übung "Erste Schritte mit MongoDB"
 Die MongoDB Shell wird mit dem Befehl ```mongo``` gestartet
 ### Erstellen Sie eine Datenbank Ihrer Wahl
@@ -110,8 +149,10 @@ db.createCollection(<name>, { options } ) // Syntax
 db.createCollection ("meinecollection", { capped: true,
         size: 6142800,
         max: 10000 } ); // Size und max grösse ist in bytes, capped beschränkt die grösse ist alles Optional
-db. collection. drop()
+db.collection.drop()
 ```
+Output:                                  
+![Hier sollte ein Bild über die MongoDB einführung erscheinen](../images/mongoeinf2.png)                                 
 ### Fügen Sie Dokumente in Ihrer Collection hinzu, suchen Sie sie und löschen Sie sie
 ```monog
 # Insert
@@ -138,6 +179,8 @@ db.meinecollection.remove ()
 db.meinecollection.remove ( { Alter: 28 } )
 db.meinecollection.remove ( { Alter: 28 }, 1 ) // löscht nur einen
 ```
+Output:                                  
+![Hier sollte ein Bild über die MongoDB einführung erscheinen](../images/mongoeinf3.png)                           
 ### Installieren Sie ein GUI-Client-Programm um auf MongoDB zuzugreifen und testen Sie die Software aus
 ## Dienste
 ### Handling
